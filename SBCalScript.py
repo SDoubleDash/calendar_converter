@@ -25,29 +25,30 @@ week = str_to_date(d["weekStarting"])
 
 for day in d["days"]:
 	if day["netScheduledHours"] > 0:
-		items = day["payScheduledShifts"][0]["jobTransfers"]
-		num_items = len(items)
-		if num_items > 0:
-			for i in range(num_items):
-				if i == num_items - 1:
-					event_list.append({
-						"name": items[i]["job"]["name"],
-						"start": str_to_date(items[i]["time"]),
-						"end": str_to_date(day["payScheduledShifts"][0]["end"])
-					})
-				else:
-					event_list.append({
-						"name": items[i]["job"]["name"],
-						"start": str_to_date(items[i]["time"]),
-						"end": str_to_date(items[i+1]["time"])
-					})
-		else:
-			item = day["payScheduledShifts"][0]
-			event_list.append({
-				"name": item["job"]["name"],
-				"start": str_to_date(item["start"]),
-				"end": str_to_date(item["end"])
-			})
+		for shifts in day["payScheduledShifts"]:
+			items = shifts["jobTransfers"]
+			num_items = len(items)
+			if num_items > 0:
+				for i in range(num_items):
+					if i == num_items - 1:
+						event_list.append({
+							"name": items[i]["job"]["name"],
+							"start": str_to_date(items[i]["time"]),
+							"end": str_to_date(shifts["end"])
+						})
+					else:
+						event_list.append({
+							"name": items[i]["job"]["name"],
+							"start": str_to_date(items[i]["time"]),
+							"end": str_to_date(items[i+1]["time"])
+						})
+			else:
+				item = shifts
+				event_list.append({
+					"name": item["job"]["name"],
+					"start": str_to_date(item["start"]),
+					"end": str_to_date(item["end"])
+				})
 
 # init the calendar
 cal = Calendar()
