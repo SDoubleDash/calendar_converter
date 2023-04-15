@@ -4,88 +4,81 @@ from datetime import datetime
 from pathlib import Path
 import os
 import pytz
-import json
+import orjson
 
-# init stuff
+# Initialize timezone
 nycTz = pytz.timezone('America/New_York')
 
-def str_to_date(str):
-	return datetime.strptime(str, '%Y-%m-%dT%H:%M:%S')
+def str_to_date(date_str):
+    return datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S')
 
-# load the json file
-__location__ = os.path.realpath(
-    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+def load_json_file(filename):
+    with open(filename, 'rb') as f:
+        data = orjson.loads(f.read())
+    return data
 
-f = open(os.path.join(__location__, "sb.txt"))
-d = json.load(f)
+def create_events_from_data(data):
+    events = []
+    week = str_to_date(data["weekStarting"])
 
-# find all events
-event_list = []
-week = str_to_date(d["weekStarting"])
+    for day in data["days"]:
+        if day["netScheduledHours"] > 0:
+            for shifts in day["payScheduledShifts"]:
+                items = shifts["jobTransfers"]
+                num_items = len(items)
 
-for day in d["days"]:
-	if day["netScheduledHours"] > 0:
-		for shifts in day["payScheduledShifts"]:
-			items = shifts["jobTransfers"]
-			num_items = len(items)
-			if num_items > 0:
-				for i in range(num_items):
-					if i == num_items - 1:
-						event_list.append({
-							"name": items[i]["job"]["name"],
-							"start": str_to_date(items[i]["time"]),
-							"end": str_to_date(shifts["end"])
-						})
-					else:
-						event_list.append({
-							"name": items[i]["job"]["name"],
-							"start": str_to_date(items[i]["time"]),
-							"end": str_to_date(items[i+1]["time"])
-						})
-			else:
-				item = shifts
-				event_list.append({
-					"name": item["job"]["name"],
-					"start": str_to_date(item["start"]),
-					"end": str_to_date(item["end"])
-				})
+                if num_items > 0:
+                    for i in range(num_items):
+                        if i == num_items - 1:
+                            events.append({
+                                "name": items[i]["job"]["name"],
+                                "start": str_to_date(items[i]["time"]),
+                                "end": str_to_date(shifts["end"])
+                            })
+                        else:
+                            events.append({
+                                "name": items[i]["job"]["name"],
+                                "start": str_to_date(items[i]["time"]),
+                                "end": str_to_date(items[i+1]["time"])
+                            })
+                else:
+                    item = shifts
+                    events.append({
+                        "name": item["job"]["name"],
+                        "start": str_to_date(item["start"]),
+                        "end": str_to_date(item["end"])
+                    })
+    return events
 
-# init the calendar
-cal = Calendar()
+def create_calendar(events):
+    cal = Calendar()
 
-# some properties are required to be compliant
-cal.add('prodid', '-//My calendar product//example.com//')
-cal.add('version', '2.0')
+    # some properties are required to be compliant
+    cal.add('prodid', '-//My calendar product//example.com//')
+    cal.add('version', '2.0')
 
-for e in event_list:
-	event = Event()
-	event.add("summary", e["name"])
-	event.add("dtstart", datetime(
-		e["start"].year,
-		e["start"].month,
-		e["start"].day,
-		e["start"].hour,
-		e["start"].minute,
-		e["start"].second,
-		tzinfo=nycTz
-	))
-	event.add("dtend", datetime(
-		e["end"].year,
-		e["end"].month,
-		e["end"].day,
-		e["end"].hour,
-		e["end"].minute,
-		e["end"].second,
-		tzinfo=nycTz
-	))
-	event["uid"] = f'{e["name"]}/{e["start"]}/{e["end"]}@SBpythonScript'
+    for e in events:
+        event = Event()
+        event.add("summary", e["name"])
+        event.add("dtstart", e["start"].replace(tzinfo=nycTz))
+        event.add("dtend", e["end"].replace(tzinfo=nycTz))
+        event["uid"] = f'{e["name"]}/{e["start"]}/{e["end"]}@SBpythonScript'
 
-	cal.add_component(event)
+        cal.add_component(event)
 
+    return cal
 
-c = open(os.path.join(__location__, f'{week.strftime("%Y-%m-%d")}_cal.ics'), 'wb')
-c.write(cal.to_ical())
+def save_calendar_to_file(cal, filename):
+    with open(filename, 'wb') as f:
+        f.write(cal.to_ical())
 
+def main():
+    current_path = Path(__file__).parent.resolve()
+    data = load_json_file(current_path / "sb.txt")
+    events = create_events_from_data(data)
+    cal = create_calendar(events)
+    week = str_to_date(data["weekStarting"])
+    save_calendar_to_file(cal, current_path / f'{week.strftime("%Y-%m-%d")}_cal.ics')
 
-c.close()
-f.close()
+if __name__ == "__main__":
+    main()
