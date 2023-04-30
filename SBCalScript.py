@@ -72,6 +72,23 @@ def save_calendar_to_file(cal, filename):
     with open(filename, 'wb') as f:
         f.write(cal.to_ical())
 
+def combine_icals(directory, output_filename):
+    # Initialize a master calendar
+    master_cal = Calendar()
+    master_cal.add('prodid', '-//My calendar product//example.com//')
+    master_cal.add('version', '2.0')
+
+    for filename in os.listdir(directory):
+        if filename.endswith(".ics"):
+            with open(os.path.join(directory, filename), 'rb') as f:
+                cal = Calendar.from_ical(f.read())
+                for component in cal.subcomponents:
+                    master_cal.add_component(component)
+
+    # Save the master calendar to a file
+    with open(os.path.join(directory, output_filename), 'wb') as f:
+        f.write(master_cal.to_ical())
+
 def main():
     current_path = Path(__file__).parent.resolve()
     data = load_json_file(current_path / "sb.txt")
@@ -79,6 +96,9 @@ def main():
     cal = create_calendar(events)
     week = str_to_date(data["weekStarting"])
     save_calendar_to_file(cal, current_path / f'{week.strftime("%Y-%m-%d")}_cal.ics')
+
+    # After creating the individual ical files, combine them into a master file
+    combine_icals(current_path, 'combined_calendar.ics')
 
 if __name__ == "__main__":
     main()
