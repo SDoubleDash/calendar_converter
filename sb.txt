@@ -1,150 +1,28 @@
-{
-    "year": 2004,
-    "month": 2,
-    "employeeId": "",
-    "hasUnpostedShifts": false,
-    "homeSite": {},
-    "netScheduledHours": 0.00,
-    "user": {},
-    "days": [
-        {
-            "businessDate": "2004-02-01T00:00:00",
-            "payScheduledShifts": [],
-            "timeOffRequestDays": [],
-            "callOffs": [],
-            "netScheduledHours": 0.0,
-            "daysInPast": true
-        },
-        {
-            "businessDate": "2004-02-02T00:00:00",
-            "payScheduledShifts": [
-                {
-                    "scheduledShiftId": "",
-                    "job": {
-                        "id": "",
-                        "name": "ExampleName1",
-                        "jobColor": ""
-                    },
-                    "jobTransfers": [
-                        {
-                            "id": "",
-                            "job": {
-                                "id": "",
-                                "name": "ExampleName1",
-                                "jobColor": ""
-                            },
-                            "time": "2004-02-02T07:30:00"
-                        },
-                        {
-                            "id": "",
-                            "job": {
-                                "id": "",
-                                "name": "ExampleName2",
-                                "jobColor": ""
-                            },
-                            "time": "2004-02-02T13:30:00"
-                        }
-                    ],
-                    "scheduleDetails": [],
-                    "start": "2004-02-02T07:30:00",
-                    "end": "2004-02-02T13:45:00",
-                    "borrowedSite": null,
-                    "netHours": 6.25,
-                    "mealHours": 0.0,
-                    "breakHours": 0.00,
-                    "dayCutStatus": "",
-                    "startOfLaborWeek": "",
-                    "swapShiftSummary": null,
-                    "isFixed": false,
-                    "isOffered": false
-                }
-            ],
-            "timeOffRequestDays": [],
-            "callOffs": [],
-            "netScheduledHours": 6.25,
-            "daysInPast": true
-        },
-        {
-            "businessDate": "2004-02-03T00:00:00",
-            "payScheduledShifts": [],
-            "timeOffRequestDays": [],
-            "callOffs": [],
-            "netScheduledHours": 0.0,
-            "daysInPast": false
-        },
-        {
-            "businessDate": "2004-02-04T00:00:00",
-            "payScheduledShifts": [
-                {
-                    "scheduledShiftId": "",
-                    "job": {
-                        "id": "",
-                        "name": "ExampleName1",
-                        "jobColor": ""
-                    },
-                    "jobTransfers": [
-                        {
-                            "id": "",
-                            "job": {
-                                "id": "",
-                                "name": "ExampleName1",
-                                "jobColor": ""
-                            },
-                            "time": "2004-02-04T07:30:00"
-                        },
-                        {
-                            "id": "",
-                            "job": {
-                                "id": "",
-                                "name": "ExampleName3",
-                                "jobColor": ""
-                            },
-                            "time": "2004-02-04T08:00:00"
-                        }
-                    ],
-                    "scheduleDetails": [],
-                    "start": "2004-02-04T07:30:00",
-                    "end": "2004-02-04T17:15:00",
-                    "borrowedSite": null,
-                    "netHours": 9.75,
-                    "mealHours": 0.0,
-                    "breakHours": 0.0,
-                    "dayCutStatus": "",
-                    "startOfLaborWeek": "",
-                    "swapShiftSummary": null,
-                    "isFixed": false,
-                    "isOffered": false
-                }
-            ],
-            "timeOffRequestDays": [],
-            "callOffs": [],
-            "netScheduledHours": 9.75,
-            "daysInPast": false
-        },
-        {
-            "businessDate": "2004-02-05T00:00:00",
-            "payScheduledShifts": [],
-            "timeOffRequestDays": [],
-            "callOffs": [],
-            "netScheduledHours": 0.0,
-            "daysInPast": false
-        },
-        {
-            "businessDate": "2004-02-06T00:00:00",
-            "payScheduledShifts": [],
-            "timeOffRequestDays": [],
-            "callOffs": [],
-            "netScheduledHours": 0.0,
-            "daysInPast": false
-        },
-        {
-            "businessDate": "2004-02-07T00:00:00",
-            "payScheduledShifts": [],
-            "timeOffRequestDays": [],
-            "callOffs": [],
-            "netScheduledHours": 0.0,
-            "daysInPast": false
-        }
-    ],
-    "weekStarting": "2004-02-01T00:00:00"
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+$session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+$session.Cookies.Add((New-Object System.Net.Cookie("REFSSessionID", "abc123", "/", ".starbucks-wfmr.jdadelivers.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("__cf_bm", "abc123-1111111111-1.0.1.1-abc123v0", "/", ".starbucks-wfmr.jdadelivers.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("SameSite", "None", "/", "starbucks-wfmr.jdadelivers.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("wfmrprd987493", "abc123", "/", "starbucks-wfmr.jdadelivers.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("JDA-CSRF", "abc123", "/", "starbucks-wfmr.jdadelivers.com")))
+Invoke-WebRequest -UseBasicParsing -Uri "https://starbucks-wfmr.jdadelivers.com/retail/data/wfmess/api/v1-beta1/mySchedules/2025-01-01?_dc=1111id=2025-01-08&siteId=1111" `
+-WebSession $session `
+-Headers @{
+"authority"="starbucks-wfmr.jdadelivers.com"
+  "method"="GET"
+  "path"="/retail/data/wfmess/api/v1-beta1/mySchedules/2025-01-08?_dc=1750295391902&id=2025-01-08&siteId=1111"
+  "scheme"="https"
+  "accept"="application/json"
+  "accept-encoding"="gzip, deflate, br, zstd"
+  "accept-language"="en-US,en;q=0.9"
+  "csrf-encrypt-token"="abc123"
+  "priority"="u=1, i"
+  "referer"="https://starbucks-wfmr.jdadelivers.com/retail/portal/page?libraryContext=abc123&menu=Partner-Self-Service-MeZabc123"
+  "sec-ch-ua"="`"Google Chrome`";v=`"137`", `"Chromium`";v=`"137`", `"Not/A)Brand`";v=`"24`""
+  "sec-ch-ua-mobile"="?0"
+  "sec-ch-ua-platform"="`"Windows`""
+  "sec-fetch-dest"="empty"
+  "sec-fetch-mode"="cors"
+  "sec-fetch-site"="same-origin"
+  "x-requested-with"="XMLHttpRequest"
 }
